@@ -10,6 +10,7 @@ import os
 import json
 from typing import Dict, List, Optional, Union, cast
 import requests
+from repo_list import repos
 
 from env import github_token, github_username
 
@@ -20,8 +21,10 @@ from env import github_token, github_username
 # TODO: Add your github username to your env.py file under the variable `github_username`
 # TODO: Add more repositories to the `REPOS` list below.
 
-REPOS = []
- 
+
+# there are 57 current unique values in this list - Mannie
+
+REPOS = repos
 
 headers = {"Authorization": f"token {github_token}", "User-Agent": github_username}
 
