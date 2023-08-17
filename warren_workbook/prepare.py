@@ -9,12 +9,11 @@ import pandas as pd
 
 ######################################### PREPARE #########################################
 
-def prepare_data(df):
+def final_df(df):
     '''This function takes in a df and returns a dataframe with cleaned, stemmed,
       and target columns added.'''
     
-    
-    df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
+    df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(basic_clean(string))))
 
     df['stem'] = df['clean_text'].apply(lambda string: stem(string))
 
@@ -22,14 +21,10 @@ def prepare_data(df):
 
     df['is_python'] = (df.language == 'Python').astype(int)
 
-    df = df.drop_duplicates()
-
-    df.reset_index(drop=True, inplace=True)
-
     return df
 
 
-def clean_strings(string):
+def basic_clean(string):
     '''This function takes in a string makes the characters lowercase 
     and removes non alphanumeric characters.'''
 
