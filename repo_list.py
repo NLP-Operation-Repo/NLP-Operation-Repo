@@ -124,4 +124,4 @@ repos = ['steven2358/awesome-generative-ai',
  'nvbn/thefuck',
  'animate-css/animate.css',
  'tensorflow/models',
- 'gothinkster/realworld']]
+ 'gothinkster/realworld']
