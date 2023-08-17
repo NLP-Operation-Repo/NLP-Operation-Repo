@@ -10,6 +10,7 @@ import os
 import json
 from typing import Dict, List, Optional, Union, cast
 import requests
+from repo_list import repos
 
 from env import github_token, github_username
 
@@ -23,64 +24,7 @@ from env import github_token, github_username
 
 # there are 57 current unique values in this list - Mannie
 
-REPOS = ['/steven2358/awesome-generative-ai',
- '/awesome-selfhosted/awesome-selfhosted',
- '/binhnguyennus/awesome-scalability',
- '/modelscope/modelscope',
- '/makeplane/plane',
- '/codecrafters-io/build-your-own-x',
- '/datahub-project/datahub',
- '/huggingface/transformers',
- '/EleutherAI/lm-evaluation-harness',
- '/poteto/hiring-without-whiteboards',
- '/novuhq/novu',
- '/Developer-Y/cs-video-courses',
- '/directus/directus',
- '/BlinkDL/RWKV-LM',
- '/meshery/meshery',
- '/coderQuad/New-Grad-Positions',
- '/deepjavalibrary/djl',
- '/langchain-ai/langchain',
- '/openai/openai-cookbook',
- '/DovAmir/awesome-design-patterns',
- '/TheAlgorithms/JavaScript',
- '/neon-nyan/Collapse',
- '/terraform-aws-modules/terraform-aws-eks',
- '/prometheus/node_exporter',
- '/angular/components',
- '/yt-dlp/yt-dlp',
- '/moq/moq',
- '/sei-protocol/sei-chain',
- '/SimplifyJobs/Summer2024-Internships',
- '/microsoft/Web-Dev-For-Beginners',
- '/Z4nzu/hackingtool',
- '/Infisical/infisical',
- '/immich-app/immich',
- '/elebumm/RedditVideoMakerBot',
- '/bnb-chain/bsc',
- '/supabase/supabase',
- '/elsa-workflows/elsa-core',
- '/projectdiscovery/katana',
- '/taikoxyz/taiko-mono',
- '/juanfont/headscale',
- '/ReVanced/revanced-manager',
- '/gravitl/netmaker',
- '/DioxusLabs/dioxus',
- '/invoke-ai/InvokeAI',
- '/reflex-dev/reflex',
- '/huggingface/text-generation-inference',
- '/SeleniumHQ/selenium',
- '/hyprwm/Hyprland',
- '/bmaltais/kohya_ss',
- '/Dao-AILab/flash-attention',
- '/trekhleb/javascript-algorithms',
- '/jesseduffield/lazygit',
- '/khoj-ai/khoj',
- '/skypilot-org/skypilot',
- '/FuelLabs/fuels-ts',
- '/simplex-chat/simplex-chat',
- '/kuchin/awesome-cto']
- 
+REPOS = repos
 
 headers = {"Authorization": f"token {github_token}", "User-Agent": github_username}
 
