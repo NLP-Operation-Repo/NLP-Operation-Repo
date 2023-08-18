@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+from scipy.stats import f_oneway
+
 
 def find_most_common_words(df,
                            language = 'all',
@@ -52,6 +54,8 @@ def plot_readme_lengths():
     plt.xlabel('README Length')
     sns.despine()
     plt.show()
+    
+    
     
 def plot_unique_word_averages():
     
@@ -129,3 +133,25 @@ def identify_unique_words(plot=True):
             sns.despine()
             plt.show()
         print('-'*50)
+        
+        
+def anova_test(df):
+    
+    df['unique_words'] = df['readme_contents'].apply(lambda x: len(set(x.split())))
+
+    # Group the data by programming language and calculate the mean number of unique words
+    language_unique_words = df.groupby('target')['unique_words'].mean()
+
+    # Extract unique words data for each programming language
+    python_unique_words = df[df['target'] == 1]['unique_words']
+    javascript_unique_words = df[df['target'] == 2]['unique_words']
+    other_unique_words = df[df['target'] == 0]['unique_words']
+
+    # Perform ANOVA test
+    f_statistic, p_value = f_oneway(python_unique_words, javascript_unique_words, other_unique_words)
+
+    # Interpret the results
+    if p_value < 0.05:
+        print("There are significant differences in the mean number of unique words among different programming languages.")
+    else:
+        print("There are no significant differences in the mean number of unique words among different programming languages.")
