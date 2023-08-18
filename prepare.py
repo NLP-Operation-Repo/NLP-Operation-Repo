@@ -32,8 +32,6 @@ def prepare_data(df = pd.read_json('data2.json')):
     df['target'] = df['language'].apply(lambda val: 1 if val == 'Python' else (2 if val == 'JavaScript' else 0))
 
     df = df.drop_duplicates()
-    
-    df = df.dropna()
 
     df.reset_index(drop=True, inplace=True)
 
