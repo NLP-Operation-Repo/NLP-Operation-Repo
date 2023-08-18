@@ -23,7 +23,7 @@ def prepare_data(df = pd.read_json('data2.json')):
       and target columns added.'''
     
     # Cleans the text by removing characters, stopwords and tokenizing
-    df['clean_text'] = df['readme_contents'].apply(lambda string: remove_long_short(remove_stopwords(tokenize(clean_strings(string)))))
+    df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
     
     df['stem'] = df['clean_text'].apply(lambda string: stem(string))
 
@@ -59,22 +59,6 @@ def clean_strings(string):
     clean_str = ' '.join(word for word in clean_str.split() if 1 <= len(word) <= 12)
 
     return clean_str
-
-
-def remove_long_short(string):
-    
-    # Split the document
-    words = string.split()
-    # every word in our document that is shorter than 12 characters
-    filtered_words = [word for word in words if len(word) <= 12]
-    # every word in our document that is longer than 1 character
-    filtered_words = [word for word in words if len(word) > 1]   
-    # glue it back together with spaces, as it was so it shall be
-    filtered_words = ' '.join(filtered_words)
-    
-    return filtered_words
-
-
 
 
 def tokenize(string):
