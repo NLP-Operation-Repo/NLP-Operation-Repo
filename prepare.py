@@ -7,6 +7,7 @@ import re
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
+import string as st
 
 from sklearn.model_selection import train_test_split
 
@@ -42,6 +43,12 @@ def clean_strings(string):
     and removes non alphanumeric characters.'''
 
     clean_str = string.lower()
+    # Remove punctuation
+    clean_str = clean_str.translate(str.maketrans('', '', st.punctuation))
+    # Remove numbers
+    clean_str = re.sub(r'\d+', '', clean_str)
+    # Remove extra whitespaces
+    clean_str = ' '.join(clean_str.split())
     clean_str = unicodedata.normalize('NFKD', clean_str)\
     .encode('ascii', 'ignore')\
     .decode('utf-8', 'ignore')
