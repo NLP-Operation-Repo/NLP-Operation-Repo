@@ -52,6 +52,8 @@ def clean_strings(string):
     .encode('ascii', 'ignore')\
     .decode('utf-8', 'ignore')
     clean_str = re.sub(r"[^a-z0-9'\s]", '', clean_str)
+    # Remove strings longer than 12 characters or shorter than 1
+    clean_str = ' '.join(word for word in clean_str.split() if 1 <= len(word) <= 12)
 
     return clean_str
 
