@@ -24,7 +24,6 @@ def prepare_data(df = pd.read_json('data2.json')):
     
     # Cleans the text by removing characters, stopwords and tokenizing
     df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
-    # 
     df['stem'] = df['clean_text'].apply(lambda string: stem(string))
 
     df['lemmatize'] = df['clean_text'].apply(lambda string: lemmatize(string))
