@@ -134,32 +134,34 @@ def lemmatize(string):
     return string
 
 
-
 ####################################### SPLIT THE DATA #######################################
 
 
     
-    
-def split_data():
-    
-    df = prepare_data()
-
-    # split test off, 20% of original df size. 
-    train_validate, test = train_test_split(df, stratify=df.target, test_size=.2, 
-                                            random_state=42)
-
-    # split validate off, 30% of what remains (24% of original df size)
-    # thus train will be 56% of original df size. 
-    train, validate = train_test_split(train_validate, test_size=.3, 
-                                       random_state=42)
-    
+def split_data(df, test_size=.10, validate_size=.10, stratify_col=None, random_state=123):
+    '''
+    take in a DataFrame and return train, validate, and test DataFrames;
+    return train, validate, test DataFrames.
+    '''
+    # no stratification
+    if stratify_col == None:
+        # split test data
+        train_validate, test = train_test_split(df, test_size=test_size, random_state=random_state)
+        # split validate data
+        train, validate = train_test_split(train_validate, test_size=validate_size/(1-test_size),
+                                                                           random_state=random_state)
+    # stratify split
+    else:
+        # split test data
+        train_validate, test = train_test_split(df, test_size=test_size,
+                                                random_state=random_state, stratify=df[stratify_col])
+        # split validate data
+        train, validate = train_test_split(train_validate, test_size=validate_size/(1-test_size),
+                                           random_state=random_state, stratify=train_validate[stratify_col])       
     return train, validate, test
 
 
-
-def X_y_split():
-    
-    train, validate, test = split_data()
+def X_y_split(train, validate, test):
 
     # split train into X (dataframe, drop target) & y (series, keep target only)
     X_train = train.drop(columns=['target'])
