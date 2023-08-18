@@ -11,34 +11,16 @@ from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
 
 
-import json
-
-
 # Must run acquire to obtain the json file 
 # Specify the path to your JSON file
-
-def load_df():
-    
-    
-    json_file_path = "data2.json"
-
-    # Read the JSON data from the file and load it into a Python dictionary
-    with open(json_file_path, "r") as json_file:
-
-        df = json.load(json_file)
-
-    df = pd.DataFrame(df)
-
-    return df
 
 
 ######################################### PREPARE #########################################
 
-def prepare_data():
+def prepare_data(df = pd.read_json('data2.json')):
     '''This function takes in a df and returns a dataframe with cleaned, stemmed,
       and target columns added.'''
     
-    df = load_df()
     # Cleans the text by removing characters, stopwords and tokenizing
     df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
     # 
@@ -138,11 +120,13 @@ def lemmatize(string):
 
 
     
-def split_data(df, test_size=.10, validate_size=.10, stratify_col=None, random_state=123):
+def split_data(df = prepare_data(), test_size=.10,
+               validate_size=.10, stratify_col=None, random_state=123):
     '''
     take in a DataFrame and return train, validate, and test DataFrames;
     return train, validate, test DataFrames.
     '''
+    
     # no stratification
     if stratify_col == None:
         # split test data
@@ -161,7 +145,9 @@ def split_data(df, test_size=.10, validate_size=.10, stratify_col=None, random_s
     return train, validate, test
 
 
-def X_y_split(train, validate, test):
+def X_y_split(train = split_data()[0],
+              validate = split_data()[1],
+              test = split_data()[2]):
 
     # split train into X (dataframe, drop target) & y (series, keep target only)
     X_train = train.drop(columns=['target'])
@@ -175,3 +161,5 @@ def X_y_split(train, validate, test):
     
     
     return X_train, y_train, X_validate, y_validate, X_test, y_test
+
+
