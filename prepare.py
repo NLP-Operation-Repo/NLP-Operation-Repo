@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 import unicodedata
 import re
 
@@ -5,22 +8,45 @@ import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 
-import pandas as pd
+from sklearn.model_selection import train_test_split
+
+
+import json
+
+
+# Must run acquire to obtain the json file 
+# Specify the path to your JSON file
+
+def load_df():
+    
+    
+    json_file_path = "data2.json"
+
+    # Read the JSON data from the file and load it into a Python dictionary
+    with open(json_file_path, "r") as json_file:
+
+        df = json.load(json_file)
+
+    df = pd.DataFrame(df)
+
+    return df
+
 
 ######################################### PREPARE #########################################
 
-def prepare_data(df):
+def prepare_data():
     '''This function takes in a df and returns a dataframe with cleaned, stemmed,
       and target columns added.'''
     
-    
+    df = load_df()
+    # Cleans the text by removing characters, stopwords and tokenizing
     df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
-
+    # 
     df['stem'] = df['clean_text'].apply(lambda string: stem(string))
 
     df['lemmatize'] = df['clean_text'].apply(lambda string: lemmatize(string))
 
-    df['is_python'] = (df.language == 'Python').astype(int)
+    df['target'] = df['language'].apply(lambda val: 1 if val == 'Python' else (2 if val == 'JavaScript' else 0))
 
     df = df.drop_duplicates()
 
@@ -106,3 +132,44 @@ def lemmatize(string):
     string = ' '.join(lemmas)
     #return the altered document
     return string
+
+
+
+####################################### SPLIT THE DATA #######################################
+
+
+    
+    
+def split_data():
+    
+    df = prepare_data()
+
+    # split test off, 20% of original df size. 
+    train_validate, test = train_test_split(df, stratify=df.target, test_size=.2, 
+                                            random_state=42)
+
+    # split validate off, 30% of what remains (24% of original df size)
+    # thus train will be 56% of original df size. 
+    train, validate = train_test_split(train_validate, test_size=.3, 
+                                       random_state=42)
+    
+    return train, validate, test
+
+
+
+def X_y_split():
+    
+    train, validate, test = split_data()
+
+    # split train into X (dataframe, drop target) & y (series, keep target only)
+    X_train = train.drop(columns=['target'])
+    y_train = train['target']
+    # split validate into X (dataframe, drop target) & y (series, keep target only)
+    X_validate = validate.drop(columns=['target'])
+    y_validate = validate['target']
+    # split test into X (dataframe, drop target) & y (series, keep target only)
+    X_test = test.drop(columns=['target'])
+    y_test = test['target']
+    
+    
+    return X_train, y_train, X_validate, y_validate, X_test, y_test
