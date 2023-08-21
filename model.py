@@ -11,11 +11,52 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.dummy import DummyClassifier
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 import prepare as p
+
+
+def run_baseline_model(X_train = p.X_y_split()[0], y_train = p.X_y_split()[1], X_validate= p.X_y_split()[2], y_validate = p.X_y_split()[3], feature_column = 'stem' ):
+    #set column for modeling
+    X_train_model = X_train[feature_column]
+    X_validate_model = X_validate[feature_column]
+
+    #make the vectorizer
+    tfidf = TfidfVectorizer()
+
+    #fit and transform the vectorizer
+    X_train_model = tfidf.fit_transform(X_train_model)
+    X_validate_model = tfidf.transform(X_validate_model)
+
+    #create df of actual values
+    train_clf = pd.DataFrame(dict(actual=y_train))
+    validate_clf = pd.DataFrame(dict(actual=y_validate))
+    
+    # Make Dummy classifier
+    clf = DummyClassifier(strategy='most_frequent').fit(X_train_model, y_train)
+
+    #add the predicted values to df
+    train_clf['predicted'] = clf.predict(X_train_model)
+    validate_clf['predicted'] = clf.predict(X_validate_model)
+    
+
+    #print train
+    print('Train')
+    print('Accuracy: {:.2%}'.format(accuracy_score(train_clf.actual, train_clf.predicted)))
+    print('---')
+    print(classification_report(train_clf.actual, train_clf.predicted))
+    print('---')
+
+
+    #print validate
+    print('Validate')
+    print('Accuracy: {:.2%}'.format(accuracy_score(validate_clf.actual, validate_clf.predicted))) 
+    print('---')
+    print(classification_report(validate_clf.actual, validate_clf.predicted))
+    print('---')
 
 
 def run_logistic_model(X_train = p.X_y_split()[0], y_train = p.X_y_split()[1], X_validate= p.X_y_split()[2], y_validate = p.X_y_split()[3], feature_column = 'stem' ):

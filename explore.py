@@ -3,6 +3,9 @@ from nltk.tokenize import word_tokenize
 
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
+
+from scipy.stats import f_oneway
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -29,12 +32,14 @@ def find_most_common_words(df,
         lang_title = language_titles.get(language, 'All')
         plt.title(f'{str(num_words)} Most Common Words for {lang_title}')
         sns.despine()
+        plt.savefig('viz/common_words.png')
         plt.show()
+        
     
     return most_common_words
 
 
-def plot_readme_lengths():
+def plot_readme_lengths(df):
     
     df['readme_length'] = df['readme_contents'].apply(len)
     readme_lens = df.groupby('target')['readme_length'].median()
@@ -51,9 +56,10 @@ def plot_readme_lengths():
     plt.ylabel('')
     plt.xlabel('README Length')
     sns.despine()
+    plt.savefig('viz/readme_lengths.png')
     plt.show()
     
-def plot_unique_word_averages():
+def plot_unique_word_averages(df):
     
     df['unique_words'] = df['readme_contents'].apply(lambda x: len(set(x.split())))
     unique_word_avgs = df.groupby('target')['unique_words'].median()
@@ -70,28 +76,11 @@ def plot_unique_word_averages():
     plt.ylabel('')
     plt.xlabel('Number of Unique Words')
     sns.despine()
+    plt.savefig('viz/num_unique_words.png')
     plt.show()
     
-def plot_unique_word_averages():
     
-    df['unique_words'] = df['readme_contents'].apply(lambda x: len(set(x.split())))
-    unique_word_avgs = df.groupby('target')['unique_words'].median()
-    index_mapping = {0: 'other', 1: 'python', 2: 'javascript'}
-    unique_word_avgs.index = unique_word_avgs.sort_index().index.map(index_mapping)
-    
-    colors = sns.color_palette("Blues_r", len(unique_word_avgs))
-    sns.barplot(x = unique_word_avgs.sort_values(ascending=False).values,
-                y = unique_word_avgs.sort_values(ascending=False).index,
-                palette=colors)
-    plt.title('Average Number of Unique Words by Language')
-    
-    plt.tick_params(axis='both', left=False)
-    plt.ylabel('')
-    plt.xlabel('Number of Unique Words')
-    sns.despine()
-    plt.show()
-    
-def identify_unique_words(plot=True):
+def identify_unique_words(df, plot=True):
     
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(df['lemmatize'])
@@ -127,5 +116,52 @@ def identify_unique_words(plot=True):
             plt.tick_params(axis='both', left=False, bottom=False)
             plt.xlabel('TF-IDF score')
             sns.despine()
+            plt.savefig(f'viz/unique_words_{language.lower()}.png')
             plt.show()
-        print('-'*50)
+        if i < 2:
+            print('-'*50)
+            
+def run_anova_test_for_readme_length(df):
+    
+    df['readme_length'] = df['readme_contents'].apply(len)
+    readme_lens = df.groupby('target')['readme_length'].median()
+    index_mapping = {0: 'other', 1: 'python', 2: 'javascript'}
+    readme_lens.index = readme_lens.sort_index().index.map(index_mapping)
+    
+    # Extract unique words data for each programming language
+    python_readme_lens = df[df['target'] == 1]['readme_length']
+    javascript_readme_lens = df[df['target'] == 2]['readme_length']
+    other_readme_lens = df[df['target'] == 0]['readme_length']
+
+    # Perform ANOVA test
+    f_statistic, p_value = f_oneway(python_readme_lens,
+                                    javascript_readme_lens,
+                                    other_readme_lens)
+
+    print('p_value', p_value)
+    # Interpret the results
+    if p_value < 0.05:
+        print("There are significant differences in the average README length among different programming languages.")
+    else:
+        print("There are no significant differences in the average README length among different programming languages.")
+
+def run_anova_test_for_number_of_unique_words(df):
+    df['unique_words'] = df['readme_contents'].apply(lambda x: len(set(x.split())))
+
+    # Group the data by programming language and calculate the mean number of unique words
+    language_unique_words = df.groupby('target')['unique_words'].mean()
+
+    # Extract unique words data for each programming language
+    python_unique_words = df[df['target'] == 1]['unique_words']
+    javascript_unique_words = df[df['target'] == 2]['unique_words']
+    other_unique_words = df[df['target'] == 0]['unique_words']
+
+    # Perform ANOVA test
+    f_statistic, p_value = f_oneway(python_unique_words, javascript_unique_words, other_unique_words)
+    
+    print('p_value', p_value)
+    # Interpret the results
+    if p_value < 0.05:
+        print("There are significant differences in the mean number of unique words among different programming languages.")
+    else:
+        print("There are no significant differences in the mean number of unique words among different programming languages.")
