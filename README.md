@@ -1,10 +1,10 @@
 <a name="top"></a>
 
-# Project: Predicting MLB Team Wins + Analyzing Stats that Lead to Wins
+# Project: Github Repository Natural Language Processing Project
 
-by Martin Reyes
+by Mannie Villa, Martin Reyes, and Elizabeth Warren
 
-Note: project done in [this](https://github.com/prestige-worldwide-1/baseball-project#date-dictionary) repo
+
 
 **Description:**
 
