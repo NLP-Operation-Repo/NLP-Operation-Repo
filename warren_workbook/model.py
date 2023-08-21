@@ -14,6 +14,10 @@ from sklearn.naive_bayes import MultinomialNB
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+import sys
+# allow modules from parent directory to be imported
+sys.path.append('..')
+
 
 import prepare as p
 
@@ -39,7 +43,7 @@ def run_logistic_model(X_train = p.X_y_split()[0], y_train = p.X_y_split()[1], X
     
 
     #fit the model
-    lm = LogisticRegression().fit(X_train_model, y_train)
+    lm = LogisticRegression(random_state=123).fit(X_train_model, y_train)
 
     #add the predicted values to df
     train_lm['predicted'] = lm.predict(X_train_model)
@@ -193,3 +197,34 @@ def run_naivebayes_model(X_train = p.X_y_split()[0], y_train = p.X_y_split()[1],
     print('---')
     print(classification_report(validate_nb.actual, validate_nb.predicted))
     print('---')
+
+
+def run_final_test_model(X_train = p.X_y_split()[0], y_train = p.X_y_split()[1], X_test=p.X_y_split()[4], y_test=p.X_y_split()[5], feature_column = 'stem'):
+    '''This function runs the top performing model Logistic Regression'''
+
+    #set column for modeling
+    X_train_model = X_train[feature_column]
+    X_test_model = X_test[feature_column]
+
+    #make the vectorizer
+    tfidf = TfidfVectorizer()
+
+    #fit and transform the vectorizer
+    X_train_model = tfidf.fit_transform(X_train_model)
+    X_test_model = tfidf.transform(X_test_model)
+
+    #fit the model
+    lm = LogisticRegression(random_state=123).fit(X_train_model, y_train)
+
+    #make df of test values
+    test_lm = pd.DataFrame(dict(actual=y_test))
+
+    #add the predicted values to df
+    test_lm['predicted'] = lm.predict(X_test_model)
+
+    #save to csv
+    test_lm.to_csv('test_pred.csv',index=False)
+
+    # accuracy of rf on test data
+    print('Accuracy of logistic regression classifier on test set: {:.2f}'
+     .format(lm.score(X_test_model, y_test)))
