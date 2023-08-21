@@ -1,6 +1,8 @@
+# Imoport Libraries
 import pandas as pd
 import numpy as np
 
+# Import sklearn libraries
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
@@ -15,6 +17,7 @@ from sklearn.dummy import DummyClassifier
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+# Import py file to run functions
 import prepare as p
 
 

@@ -1,14 +1,18 @@
+# Import libraries
 import pandas as pd
 import numpy as np
 
+# Import regex
 import unicodedata
 import re
 
+# Import Tokenizer
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 import string as st
 
+# Import sklearn libraries
 from sklearn.model_selection import train_test_split
 
 
@@ -24,15 +28,15 @@ def prepare_data(df = pd.read_json('data2.json')):
     
     # Cleans the text by removing characters, stopwords and tokenizing
     df['clean_text'] = df['readme_contents'].apply(lambda string: remove_stopwords(tokenize(clean_strings(string))))
-    
+    # Stemming the strings
     df['stem'] = df['clean_text'].apply(lambda string: stem(string))
-
+    # Lemmatizing the strings
     df['lemmatize'] = df['clean_text'].apply(lambda string: lemmatize(string))
-
+    # Adding a target a column lableing languages of the repos as 0, 1, and 2
     df['target'] = df['language'].apply(lambda val: 1 if val == 'Python' else (2 if val == 'JavaScript' else 0))
-
+    # Droppping duplicates
     df = df.drop_duplicates()
-
+    # Reseting the index
     df.reset_index(drop=True, inplace=True)
 
     return df
